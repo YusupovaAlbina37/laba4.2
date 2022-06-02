@@ -103,16 +103,16 @@ vec4 CalcDirectionalLight(vec3 Normal)                                       \n\
      return CalcLightInternal(gDirectionalLight.Base, gDirectionalLight.Direction, Normal); \n\
 }                                                                            \n\
                                                                              \n\
-vec4 CalcPointLight(PointLight l, vec3 Normal)                               \n\
+vec4 CalcPointLight(int Index, vec3 Normal)                                  \n\
 {                                                                            \n\
-     vec3 LightDirection = WorldPos0 - l.Position;                           \n\
+     vec3 LightDirection = WorldPos0 - gPointLights[Index].Position;         \n\
      float Distance = length(LightDirection);                                \n\
      LightDirection = normalize(LightDirection);                             \n\
                                                                              \n\
-     vec4 Color = CalcLightInternal(l.Base, LightDirection, Normal);         \n\
-     float Attenuation = l.Atten.Constant +                                  \n\
-                         l.Atten.Linear * Distance +                         \n\
-                         l.Atten.Exp * Distance * Distance;                  \n\
+     vec4 Color = CalcLightInternal(gPointLights[Index].Base, LightDirection, Normal);      \n\
+     float Attenuation = gPointLights[Index].Atten.Constant +                \n\
+                         gPointLights[Index].Atten.Linear * Distance +       \n\
+                         gPointLights[Index].Atten.Exp * Distance * Distance;               \n\
                                                                              \n\
      return (Color / Attenuation);                                           \n\
 }                                                                            \n\
@@ -123,7 +123,7 @@ void main()                                                                  \n\
     vec4 TotalLight = CalcDirectionalLight(Normal);                          \n\
                                                                              \n\
     for (int i = 0 ; i < gNumPointLights ; i++) {                            \n\
-    TotalLight += CalcPointLight(gPointLights[i], Normal);                   \n\
+    TotalLight += CalcPointLight(i, Normal);                                 \n\
     }                                                                        \n\
                                                                              \n\
     FragColor = texture2D(gSampler, TexCoord0.xy) * TotalLight;              \n\
